@@ -7,3 +7,15 @@ pub fn normalize(u: &[f32; 3]) -> [f32; 3] {
     let magnitude = dot_prod(u, u).sqrt();
     [u[0] / magnitude, u[1] / magnitude, u[2] / magnitude]
 }
+
+pub fn scalar_mult(u: &[f32; 3], t: f32) -> [f32; 3] {
+    [u[0] * t, u[1] * t, u[2] * t]
+}
+
+pub fn add(u: &[f32; 3], v: &[f32; 3]) -> [f32; 3] {
+    [u[0] + v[0], u[1] + v[1], u[2] + v[2]]
+}
+
+pub fn subtract(u: &[f32; 3], v: &[f32; 3]) -> [f32; 3] {
+    [u[0] - v[0], u[1] - v[1], u[2] - v[2]]
+}

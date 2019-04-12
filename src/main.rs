@@ -6,17 +6,33 @@ use std::f32;
 
 use math::*;
 
+#[derive(Copy, Clone)]
+struct Material {
+    diffuse_color: [u8; 3],
+}
+
+impl Material {
+    fn new(diffuse_color: [u8; 3]) -> Material {
+        Material { diffuse_color }
+    }
+}
+
 struct Sphere {
     center: [f32; 3],
     radius: f32,
+    material: Material,
 }
 
 impl Sphere {
-    fn new(center: [f32; 3], radius: f32) -> Sphere {
-        Sphere { center, radius }
+    fn new(center: [f32; 3], radius: f32, material: Material) -> Sphere {
+        Sphere {
+            center,
+            radius,
+            material,
+        }
     }
 
-    fn ray_intersect(&self, origin: &[f32; 3], dir: &[f32; 3], _t: f32) -> bool {
+    fn ray_intersect(&self, origin: &[f32; 3], dir: &[f32; 3], t: &mut f32) -> bool {
         // Note it is assumed that dir is a unit vector and that is why we
         // do not have to do the entire projection just the dot product
         let origin_to_center = [
@@ -33,26 +49,51 @@ impl Sphere {
         }
 
         let dist_to_intersection = (self.radius * self.radius - distance_squared).sqrt();
-        let mut t0 = dot - dist_to_intersection;
+        *t = dot - dist_to_intersection;
         let t1 = dot + dist_to_intersection;
-        if t0 < 0.0 {
-            t0 = t1;
+        if *t < 0.0 {
+            *t = t1;
         }
-        if t0 < 0.0 {
+        if *t < 0.0 {
             return false;
         }
         return true;
     }
 }
 
-fn cast_ray(origin: &[f32; 3], dir: &[f32; 3], sphere: &Sphere) -> [u8; 3] {
-    if !sphere.ray_intersect(origin, dir, f32::MAX) {
-        return [0, 51, 0]; // background color
+fn scene_intersect(
+    origin: &[f32; 3],
+    dir: &[f32; 3],
+    spheres: &Vec<Sphere>,
+    hit: &mut [f32; 3],
+    normal: &mut [f32; 3],
+    material: &mut Material,
+) -> bool {
+    let mut closest_sphere_dist = f32::MAX;
+    for sphere in spheres {
+        let mut dist_i = f32::MAX;
+        if sphere.ray_intersect(origin, dir, &mut dist_i) && dist_i < closest_sphere_dist {
+            closest_sphere_dist = dist_i;
+            *hit = add(origin, &scalar_mult(&dir, dist_i));
+            *normal = normalize(&subtract(&hit, &sphere.center));
+            *material = sphere.material.clone();
+        }
     }
-    return [204, 51, 153]; // color of sphere
+    closest_sphere_dist < 1000.0
 }
 
-fn render(sphere: &Sphere) {
+fn cast_ray(origin: &[f32; 3], dir: &[f32; 3], spheres: &Vec<Sphere>) -> [u8; 3] {
+    let mut point = [0.0, 0.0, 0.0];
+    let mut n = [0.0, 0.0, 0.0];
+    let mut m = Material::new([0, 0, 0]);
+
+    if !scene_intersect(origin, dir, spheres, &mut point, &mut n, &mut m) {
+        return [0, 51, 0]; // background color
+    }
+    return m.diffuse_color; // color of sphere
+}
+
+fn render(spheres: &Vec<Sphere>) {
     let width = 1024;
     let height = 768;
     let fov = f32::consts::PI / 2.0;
@@ -69,13 +110,18 @@ fn render(sphere: &Sphere) {
         let i = (2.0 * (x_f + 0.5) / width_f - 1.0) * screen_width * width_f / height_f;
         let j = -(2.0 * (y_f + 0.5) / height_f - 1.0) * screen_width;
         let dir = normalize(&[i, j, -1.0]);
-        *pixel = image::Rgb(cast_ray(&[0.0, 0.0, 0.0], &dir, sphere));
+        *pixel = image::Rgb(cast_ray(&[0.0, 0.0, 0.0], &dir, spheres));
     }
 
-    imgbuf.save("step2.png").expect("Could not write image");
+    imgbuf.save("step3.png").expect("Could not write image");
 }
 
 fn main() {
-    let s = Sphere::new([-3.0, 0.0, -16.0], 2.0);
+    let s = vec![
+        Sphere::new([-3.0, 0.0, -16.0], 2.0, Material::new([255, 255, 0])),
+        Sphere::new([-1.0, -1.5, -12.0], 2.0, Material::new([76, 25, 25])),
+        Sphere::new([1.5, -0.5, -18.0], 3.0, Material::new([76, 25, 25])),
+        Sphere::new([7.0, 5.0, -18.0], 4.0, Material::new([255, 255, 0])),
+    ];
     render(&s);
 }
