@@ -23,11 +23,17 @@ impl Light {
 #[derive(Copy, Clone)]
 struct Material {
     diffuse_color: [u8; 3],
+    specular_exponent: f32,
+    albedo: [f32; 2],
 }
 
 impl Material {
-    fn new(diffuse_color: [u8; 3]) -> Material {
-        Material { diffuse_color }
+    fn new(diffuse_color: [u8; 3], specular_exponent: f32, albedo: [f32; 2]) -> Material {
+        Material {
+            diffuse_color,
+            specular_exponent,
+            albedo,
+        }
     }
 }
 
@@ -104,16 +110,27 @@ fn cast_ray(
 ) -> [u8; 3] {
     let mut point = [0.0, 0.0, 0.0];
     let mut n = [0.0, 0.0, 0.0];
-    let mut m = Material::new([0, 0, 0]);
+    let mut m = Material::new([0, 0, 0], 0.0, [0.0, 0.0]);
 
     if !scene_intersect(origin, dir, spheres, &mut point, &mut n, &mut m) {
         return [0, 51, 0]; // background color
     }
 
-    let mut diffuse_light_intesity = 0.0;
+    let mut diffuse_light_intensity = 0.0;
+    let mut specular_light_intensity = 0.0;
     for light in lights {
         let light_direction = normalize(&subtract(&light.position, &point));
-        diffuse_light_intesity += light.intensity * max(0.0, dot_prod(&light_direction, &n));
+
+        diffuse_light_intensity += light.intensity * max(0.0, dot_prod(&light_direction, &n));
+        specular_light_intensity += max(
+            0.0,
+            dot_prod(
+                &scalar_mult(&reflect(&scalar_mult(&light_direction, -1.0), &n), -1.0),
+                dir,
+            ),
+        )
+        .powf(m.specular_exponent)
+            * light.intensity;
     }
 
     let mut f32_color = scalar_mult(
@@ -124,8 +141,17 @@ fn cast_ray(
         ],
         1.0 / 255.0,
     );
-    f32_color = scalar_mult(&f32_color, diffuse_light_intesity);
+    f32_color = scalar_mult(&f32_color, diffuse_light_intensity);
     f32_color = scalar_mult(&f32_color, 255.0);
+    f32_color = scalar_mult(&f32_color, m.albedo[0]);
+    f32_color = add(
+        &f32_color,
+        &scalar_mult(&[1.0, 1.0, 1.0], specular_light_intensity * m.albedo[1]),
+    );
+    let max_color = max(f32_color[0], max(f32_color[1], f32_color[2]));
+    if max_color > 255.0 {
+        f32_color = scalar_mult(&f32_color, 255.0 / max_color);
+    }
     let u8_version = convert_to_u8(f32_color);
     return u8_version; // color of sphere
 }
@@ -147,20 +173,41 @@ fn render(spheres: &Vec<Sphere>, lights: &Vec<Light>) {
         let i = (2.0 * (x_f + 0.5) / width_f - 1.0) * screen_width * width_f / height_f;
         let j = -(2.0 * (y_f + 0.5) / height_f - 1.0) * screen_width;
         let dir = normalize(&[i, j, -1.0]);
-        *pixel = image::Rgb(cast_ray(&[0.0, 0.0, 0.0], &dir, spheres, lights));
+        let color = cast_ray(&[0.0, 0.0, 0.0], &dir, spheres, lights);
+        *pixel = image::Rgb(color);
     }
 
-    imgbuf.save("step4.png").expect("Could not write image");
+    imgbuf.save("step5.png").expect("Could not write image");
 }
 
 fn main() {
     let s = vec![
-        Sphere::new([-3.0, 0.0, -16.0], 2.0, Material::new([102, 102, 76])),
-        Sphere::new([-1.0, -1.5, -12.0], 2.0, Material::new([76, 25, 25])),
-        Sphere::new([1.5, -0.5, -18.0], 3.0, Material::new([76, 25, 25])),
-        Sphere::new([7.0, 5.0, -18.0], 4.0, Material::new([102, 102, 76])),
+        Sphere::new(
+            [-3.0, 0.0, -16.0],
+            2.0,
+            Material::new([102, 102, 76], 50.0, [0.6, 0.3]),
+        ),
+        Sphere::new(
+            [-1.0, -1.5, -12.0],
+            2.0,
+            Material::new([76, 25, 25], 10.0, [0.9, 0.1]),
+        ),
+        Sphere::new(
+            [1.5, -0.5, -18.0],
+            3.0,
+            Material::new([76, 25, 25], 10.0, [0.9, 0.1]),
+        ),
+        Sphere::new(
+            [7.0, 5.0, -18.0],
+            4.0,
+            Material::new([102, 102, 76], 50.0, [0.6, 0.3]),
+        ),
     ];
 
-    let l = vec![Light::new([20.0, 20.0, 20.0], 1.5)];
+    let l = vec![
+        Light::new([20.0, 20.0, 20.0], 1.5),
+        Light::new([30.0, 50.0, -25.0], 1.8),
+        Light::new([30.0, 20.0, 30.0], 1.7),
+    ];
     render(&s, &l);
 }

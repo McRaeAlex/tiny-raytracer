@@ -34,3 +34,7 @@ pub fn max(v1: f32, v2: f32) -> f32 {
 pub fn convert_to_u8(v: [f32; 3]) -> [u8; 3] {
     [v[0] as u8, v[1] as u8, v[2] as u8]
 }
+
+pub fn reflect(i: &[f32; 3], n: &[f32; 3]) -> [f32; 3] {
+    subtract(i, &scalar_mult(n, dot_prod(i, n) * 2.0))
+}
