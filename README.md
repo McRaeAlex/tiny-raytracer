@@ -6,11 +6,11 @@ Each step will contain my code written for that step.
 
 I am a little giddy right now because usually these projects never go that 
 smoothly. I rewrote all the code or at least edited it and it works better than
-I had hoped! I found writing it in a much more readable rustlike was helped. By 
-no means is the code clean or slick in any way but it works and I understand it 
+I had hoped! I found writing it in a much more readable rustlike way helped. By 
+no means is the code clean or slick in any way but it works and I understand it, 
 which is a great feeling. I also managed to write it to be extensible, anything
 that can calculate a normal, check if the ray hit it, and has a material can be 
-rendered by this.
+rendered by this. This was done through rust's trait system.
 
 ### Result:
 ![Rewrite](rewrite.png)
