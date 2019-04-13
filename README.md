@@ -197,3 +197,12 @@ how I could fix it to not round but I feel like there is a better way.
 ![Result from step 4](step4.png)
 
 ## Step 5:
+
+This step I had issues with, I found that the way the original was programmed 
+was very C style, mutating instead of immutable, so I found it much harder to 
+understand. I think instead of moving onto the next step I am going to restart
+the project and write it in a way that makes sense to me and include 
+extensions to render other things than circle and planes.
+
+### Result:
+![Result from step 5](step5.png)
