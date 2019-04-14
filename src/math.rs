@@ -40,3 +40,8 @@ pub fn convert_to_u8(v: [f32; 3]) -> [u8; 3] {
 pub fn reflect(i: &[f32; 3], n: &[f32; 3]) -> [f32; 3] {
     subtract(i, &scalar_mult(n, dot_prod(i, n) * 2.0))
 }
+
+pub fn length(u: &[f32; 3]) -> f32 {
+    let squared = u[0].powi(2) + u[1].powi(2) + u[2].powi(2);
+    squared.sqrt()
+}

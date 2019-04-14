@@ -95,3 +95,7 @@ extensions to render other things than circle and planes.
 
 ### Result:
 ![Result from step 5](step5.png)
+
+## Step 6:
+
+With the rewrite this was much easier. It did not make to large of a difference.
