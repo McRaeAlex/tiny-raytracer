@@ -99,3 +99,14 @@ extensions to render other things than circle and planes.
 ## Step 6:
 
 With the rewrite this was much easier. It did not make to large of a difference.
+
+### Result:
+![Result from step 6](step6.png)
+
+## Step 7:
+
+This was really cool because I understood right away from a previous step how to
+do this step. The result is also really interesting.
+
+### Result:
+![Result from step 7](step7.png)

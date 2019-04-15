@@ -42,13 +42,13 @@ pub fn render(objects: &Vec<Box<Renderable>>, lights: &Vec<Light>) {
         let direction = normalize(&[i, j, -1.0]);
 
         // send the ray out and get the color back to draw the pixel
-        let color = cast_ray(&[0.0, 0.0, 0.0], &direction, objects, lights);
+        let color = cast_ray(&[0.0, 0.0, 0.0], &direction, objects, lights, 0);
         *pixel = image::Rgb(color);
     }
 
     // write to disk
     imgbuf
-        .save("step6.png")
+        .save("step7.png")
         .expect("failed to write image to disk");
 }
 
@@ -57,11 +57,24 @@ pub fn cast_ray(
     direction: &[f32; 3],
     objects: &Vec<Box<Renderable>>,
     lights: &Vec<Light>,
+    depth: u8,
 ) -> [u8; 3] {
+    // if we have reflected alot
+    if depth > 4 {
+        return [0, 53, 53];
+    }
+
     let (hit, normal, material) = match scene_intersect(origin, direction, objects) {
         Some(val) => val,           // something was hit
         None => return [0, 53, 53], // not object was hit so background color
     };
+
+    let reflect_dir = normalize(&reflect(direction, &normal));
+    let reflect_origin = match dot_prod(&reflect_dir, &normal) < 0.0 {
+        true => subtract(&hit, &scalar_mult(&normal, 0.001)),
+        false => add(&hit, &scalar_mult(&normal, 0.001)),
+    };
+    let reflect_color = cast_ray(&reflect_origin, &reflect_dir, objects, lights, depth + 1);
 
     let mut diffuse_light_intensity = 0.0;
     let mut specular_light_intensity = 0.0;
@@ -125,6 +138,17 @@ pub fn cast_ray(
             specular_light_intensity * material.albedo[1],
         ),
     );
+    f32_color = add(
+        &f32_color,
+        &scalar_mult(
+            &[
+                reflect_color[0] as f32,
+                reflect_color[1] as f32,
+                reflect_color[2] as f32,
+            ],
+            material.albedo[2],
+        ),
+    );
 
     // get the max color and if its over the value 255 make it 255
     let max_color = max(f32_color[0], max(f32_color[1], f32_color[2]));
@@ -148,7 +172,7 @@ pub fn scene_intersect(
     let mut closest_model_dist = f32::MAX;
     let mut hit = [0.0, 0.0, 0.0];
     let mut normal = [0.0, 0.0, 0.0];
-    let mut material = Material::from([67, 249, 85], 10.0, [0.6, 0.3]);
+    let mut material = Material::from([67, 249, 85], 10.0, [0.6, 0.3, 0.0]);
     for model in renders {
         let dist_i = match model.ray_intersect(origin, dir) {
             Some(dist) => dist, // the object was hit
