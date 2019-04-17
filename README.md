@@ -2,19 +2,6 @@
 This is a implementation of a ray tracer in rust based off of ssloy's.
 Each step will contain my code written for that step.
 
-## After rewrite:
-
-I am a little giddy right now because usually these projects never go that 
-smoothly. I rewrote all the code or at least edited it and it works better than
-I had hoped! I found writing it in a much more readable rustlike way helped. By 
-no means is the code clean or slick in any way but it works and I understand it, 
-which is a great feeling. I also managed to write it to be extensible, anything
-that can calculate a normal, check if the ray hit it, and has a material can be 
-rendered by this. This was done through rust's trait system.
-
-### Result:
-![Rewrite](rewrite.png)
-
 ### Future:
 
 Now that I have this framework set up I will work on adding more renderables,
@@ -92,6 +79,19 @@ was very C style, mutating instead of immutable, so I found it much harder to
 understand. I think instead of moving onto the next step I am going to restart
 the project and write it in a way that makes sense to me and include 
 extensions to render other things than circle and planes.
+
+## After rewrite:
+
+I am a little giddy right now because usually these projects never go that 
+smoothly. I rewrote all the code or at least edited it and it works better than
+I had hoped! I found writing it in a much more readable rustlike way helped. By 
+no means is the code clean or slick in any way but it works and I understand it, 
+which is a great feeling. I also managed to write it to be extensible, anything
+that can calculate a normal, check if the ray hit it, and has a material can be 
+rendered by this. This was done through rust's trait system.
+
+### Result:
+![Rewrite](rewrite.png)
 
 ### Result:
 ![Result from step 5](step5.png)
