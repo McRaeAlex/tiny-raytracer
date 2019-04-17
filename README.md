@@ -80,6 +80,9 @@ understand. I think instead of moving onto the next step I am going to restart
 the project and write it in a way that makes sense to me and include 
 extensions to render other things than circle and planes.
 
+### Result:
+![Result from step 5](step5.png)
+
 ## After rewrite:
 
 I am a little giddy right now because usually these projects never go that 
@@ -92,9 +95,6 @@ rendered by this. This was done through rust's trait system.
 
 ### Result:
 ![Rewrite](rewrite.png)
-
-### Result:
-![Result from step 5](step5.png)
 
 ## Step 6:
 
