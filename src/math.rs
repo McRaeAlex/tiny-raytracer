@@ -33,6 +33,13 @@ pub fn max(v1: f32, v2: f32) -> f32 {
     return v1;
 }
 
+pub fn min(v1: f32, v2: f32) -> f32 {
+    if v2 > v1 {
+        return v1;
+    }
+    return v2;
+}
+
 pub fn convert_to_u8(v: [f32; 3]) -> [u8; 3] {
     [v[0] as u8, v[1] as u8, v[2] as u8]
 }
@@ -44,4 +51,28 @@ pub fn reflect(i: &[f32; 3], n: &[f32; 3]) -> [f32; 3] {
 pub fn length(u: &[f32; 3]) -> f32 {
     let squared = u[0].powi(2) + u[1].powi(2) + u[2].powi(2);
     squared.sqrt()
+}
+
+pub fn refract(i: &[f32;3], n: &[f32; 3], refractive_index: f32) -> [f32; 3] {
+    let mut cosi = -1.0 * max(-1.0, min(1.0, dot_prod(i, n)));
+    let mut etai = 1.0;
+    let mut etat = refractive_index;
+    let normal = match cosi < 0.0 {
+        true => {
+            cosi = -1.0 * cosi;
+            let temp = etat;
+            etat = etai;
+            etai = temp;
+            scalar_mult(n, -1.0)
+        },
+        false => [n[0], n[1], n[2]],
+    };
+    let eta = etai/etat;
+    let k = 1.0 - eta *eta * (1.0 - cosi*cosi);
+    match k < 0.0 {
+        true => [0.0,0.0,0.0],
+        false => {
+            add(&scalar_mult(i, eta), &scalar_mult(&normal, eta * cosi - k.sqrt()))
+        },
+    }
 }

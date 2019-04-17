@@ -48,7 +48,7 @@ pub fn render(objects: &Vec<Box<Renderable>>, lights: &Vec<Light>) {
 
     // write to disk
     imgbuf
-        .save("step7.png")
+        .save("step8.png")
         .expect("failed to write image to disk");
 }
 
@@ -68,6 +68,13 @@ pub fn cast_ray(
         Some(val) => val,           // something was hit
         None => return [0, 53, 53], // not object was hit so background color
     };
+
+    let refract_dir = normalize(&refract(direction, &normal, material.refractive_index));
+    let refract_origin = match dot_prod(&refract_dir, &normal) < 0.0 {
+        true => subtract(&hit, &scalar_mult(&normal, 0.001)),
+        false => add(&hit, &scalar_mult(&normal, 0.001)),
+    };
+    let refract_color = cast_ray(&refract_origin, &refract_dir, objects, lights, depth + 1);
 
     let reflect_dir = normalize(&reflect(direction, &normal));
     let reflect_origin = match dot_prod(&reflect_dir, &normal) < 0.0 {
@@ -96,7 +103,7 @@ pub fn cast_ray(
         // check if the ray hits anything and then check if it is closer than
         // the light
         // this is a bit messy
-        if let Some((shadow_hit, shadow_norm, _)) =
+        if let Some((shadow_hit, _shadow_norm, _)) =
             scene_intersect(&shadow_origin, &light_direction, objects)
         {
             if length(&subtract(&shadow_hit, &shadow_origin)) < light_distance {
@@ -149,6 +156,18 @@ pub fn cast_ray(
             material.albedo[2],
         ),
     );
+    f32_color = add(
+        &f32_color,
+        &scalar_mult(
+            &[
+                refract_color[0] as f32,
+                refract_color[1] as f32,
+                refract_color[2] as f32,
+            ],
+            material.albedo[3],
+        ),
+    );
+    
 
     // get the max color and if its over the value 255 make it 255
     let max_color = max(f32_color[0], max(f32_color[1], f32_color[2]));
@@ -172,7 +191,7 @@ pub fn scene_intersect(
     let mut closest_model_dist = f32::MAX;
     let mut hit = [0.0, 0.0, 0.0];
     let mut normal = [0.0, 0.0, 0.0];
-    let mut material = Material::from([67, 249, 85], 10.0, [0.6, 0.3, 0.0]);
+    let mut material = Material::from([67, 249, 85], 10.0, [0.6, 0.3, 0.0, 0.0], 0.0);
     for model in renders {
         let dist_i = match model.ray_intersect(origin, dir) {
             Some(dist) => dist, // the object was hit

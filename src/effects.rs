@@ -16,15 +16,17 @@ impl Light {
 pub struct Material {
     pub diffuse_color: [u8; 3],
     pub specular_exponent: f32,
-    pub albedo: [f32; 3],
+    pub albedo: [f32; 4],
+    pub refractive_index: f32,
 }
 
 impl Material {
-    pub fn from(diffuse_color: [u8; 3], specular_exponent: f32, albedo: [f32; 3]) -> Material {
+    pub fn from(diffuse_color: [u8; 3], specular_exponent: f32, albedo: [f32; 4], refractive_index: f32) -> Material {
         Material {
             diffuse_color,
             specular_exponent,
             albedo,
+            refractive_index,
         }
     }
 }

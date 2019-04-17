@@ -8,22 +8,22 @@ fn main() {
         Box::new(shapes::Sphere::from(
             [-3.0, 0.0, -16.0],
             2.0,
-            effects::Material::from([102, 102, 76], 50.0, [0.6, 0.3, 0.1]),
+            effects::Material::from([102, 102, 76], 50.0, [0.6, 0.3, 0.1, 0.0], 1.0),
         )),
         Box::new(shapes::Sphere::from(
             [-1.0, -1.5, -12.0],
             2.0,
-            effects::Material::from([255, 255, 255], 1425.0, [0.0, 10.0, 0.8]),
+            effects::Material::from([153, 179, 204], 125.0, [0.0, 0.5, 0.1, 0.8], 1.5),
         )),
         Box::new(shapes::Sphere::from(
             [1.5, -0.5, -18.0],
             3.0,
-            effects::Material::from([76, 25, 25], 10.0, [0.9, 0.1, 0.0]),
+            effects::Material::from([76, 25, 25], 10.0, [0.9, 0.1, 0.0, 0.0], 1.0),
         )),
         Box::new(shapes::Sphere::from(
             [7.0, 5.0, -18.0],
             4.0,
-            effects::Material::from([255, 255, 255], 1425.0, [0.0, 10.0, 0.8]),
+            effects::Material::from([255, 255, 255], 1425.0, [0.0, 10.0, 0.8, 0.0], 1.0),
         )),
     ];
 

@@ -110,3 +110,11 @@ do this step. The result is also really interesting.
 
 ### Result:
 ![Result from step 7](step7.png)
+
+## Step 8:
+
+This one sort of sucked, at this point the code is pretty messy but I have ideas
+how to fix it later. The math makes sense however which is really cool.
+
+### Result:
+![Result from step 8](step8.png)
