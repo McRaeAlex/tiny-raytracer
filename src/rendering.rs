@@ -48,7 +48,7 @@ pub fn render(objects: &Vec<Box<Renderable>>, lights: &Vec<Light>) {
 
     // write to disk
     imgbuf
-        .save("step8.png")
+        .save("step9.png")
         .expect("failed to write image to disk");
 }
 
@@ -167,7 +167,6 @@ pub fn cast_ray(
             material.albedo[3],
         ),
     );
-    
 
     // get the max color and if its over the value 255 make it 255
     let max_color = max(f32_color[0], max(f32_color[1], f32_color[2]));

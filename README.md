@@ -4,6 +4,10 @@ Each step will contain my code written for that step.
 
 ### Future:
 
+Currently need to use cgmath. It will be a fairly large rewrite but the use of
+traits and generics should make the programs much better.
+- [ ] TODO: intergrate cgmath
+
 Now that I have this framework set up I will work on adding more renderables,
 including planes and meshes and provide a way for the background to be changed
 from a single color to a image. Another thing is reflection and refraction are 

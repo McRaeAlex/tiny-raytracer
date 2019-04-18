@@ -1,10 +1,10 @@
-use super::rendering::Renderable;
-use super::math::*;
 use super::effects::*;
+use super::math::*;
+use super::rendering::Renderable;
 
 pub struct Sphere {
-    center: [f32; 3], 
-    radius: f32, 
+    center: [f32; 3],
+    radius: f32,
     material: Material,
 }
 
@@ -13,7 +13,7 @@ impl Sphere {
         Sphere {
             center,
             radius,
-            material
+            material,
         }
     }
 }
@@ -51,5 +51,43 @@ impl Renderable for Sphere {
 
     fn compute_normal(&self, point: &[f32; 3]) -> [f32; 3] {
         normalize(&subtract(point, &self.center))
+    }
+}
+
+pub struct Plane {
+    normal: [f32; 3],
+    point: [f32; 3],
+    material: Material,
+}
+
+impl Plane {
+    pub fn new(normal: [f32; 3], point: [f32; 3], material: Material) -> Plane {
+        Plane {
+            normal,
+            point,
+            material,
+        }
+    }
+}
+
+impl Renderable for Plane {
+    fn ray_intersect(&self, origin: &[f32; 3], dir: &[f32; 3]) -> Option<f32> {
+        let temp = dot_prod(&self.normal, dir);
+        if temp == 0.0 || temp == -0.0 {
+            return None;
+        }
+
+        let t = (dot_prod(&self.normal, &self.point) - dot_prod(&self.normal, origin))
+            / dot_prod(&self.normal, dir);
+        //let point = add(&origin, &scalar_mult(dir, t));
+        return Some(t);
+    }
+
+    fn material(&self) -> Material {
+        self.material.clone()
+    }
+
+    fn compute_normal(&self, point: &[f32; 3]) -> [f32; 3] {
+        return normalize(&self.normal);
     }
 }
