@@ -1,10 +1,12 @@
+use cgmath::*;
+
 pub struct Light {
-    pub position: [f32; 3],
+    pub position: Vector3<f32>,
     pub intensity: f32,
 }
 
 impl Light {
-    pub fn new(position: [f32; 3], intensity: f32) -> Light {
+    pub fn new(position: Vector3<f32>, intensity: f32) -> Light {
         Light {
             position,
             intensity,
@@ -14,14 +16,19 @@ impl Light {
 
 #[derive(Copy, Clone)]
 pub struct Material {
-    pub diffuse_color: [u8; 3],
+    pub diffuse_color: Vector3<f32>,
     pub specular_exponent: f32,
-    pub albedo: [f32; 4],
+    pub albedo: Vector4<f32>,
     pub refractive_index: f32,
 }
 
 impl Material {
-    pub fn from(diffuse_color: [u8; 3], specular_exponent: f32, albedo: [f32; 4], refractive_index: f32) -> Material {
+    pub fn new(
+        diffuse_color: Vector3<f32>,
+        specular_exponent: f32,
+        albedo: Vector4<f32>,
+        refractive_index: f32,
+    ) -> Material {
         Material {
             diffuse_color,
             specular_exponent,
